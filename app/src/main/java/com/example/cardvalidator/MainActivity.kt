@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,6 +22,9 @@ import java.util.Calendar
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity() {
     private lateinit var digitViews: List<TextView>
+
+    private var actualCVV: String = ""
+
 
     enum class CardFlag(val logoRes: Int, val color: Int, val regex: String) {
         VISA(R.drawable.ic_visa, 0xFF191278.toInt(), "^4.*"),
@@ -47,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         val nameInput = findViewById<EditText>(R.id.namenter)
         val cvvInput = findViewById<EditText>(R.id.cvventer)
         val expInput = findViewById<EditText>(R.id.expenter)
+        val addSubmit = findViewById<Button>(R.id.addbtn)
 
         val holderNameDisplay = findViewById<TextView>(R.id.holderName)
         val cvvDisplay = findViewById<TextView>(R.id.cvv)
@@ -85,11 +90,8 @@ class MainActivity : AppCompatActivity() {
                         crossfade(true)
                         allowHardware(true)
                     }
-
-                    cardBackground.setBackgroundColor(brand.color)
                 } else {
                     brandLogoDisplay.visibility = View.GONE
-                    cardBackground.setBackgroundColor(0xFF2D2D2D.toInt())
                 }
 
 
@@ -121,6 +123,83 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+
+        cvvInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                actualCVV = s.toString() // Store the real value here
+                displayCVV(actualCVV, cvvDisplay)
+            }
+        })
+
+        addSubmit.setOnClickListener {
+            val cardNumber = cardnoinput.text.toString().replace(" ", "")
+            val name = nameInput.text.toString().trim()
+            val expiry = expInput.text.toString().trim()
+
+            when {
+                cardNumber.isEmpty() -> {
+                    cardnoinput.error = "Enter card number"
+                    cardnoinput.requestFocus()
+                }
+                cardNumber.length < 16 || !isValidLuhn(cardNumber) -> {
+                    cardnoinput.error = "Invalid card number"
+                    cardnoinput.requestFocus()
+                }
+                name.isEmpty() -> {
+                    nameInput.error = "Enter cardholder name"
+                    nameInput.requestFocus()
+                }
+                expiry.isEmpty() -> {
+                    expInput.error = "Select expiry date"
+                    expInput.requestFocus()
+                }
+                actualCVV.isEmpty() -> {
+                    cvvInput.error = "Enter CVV"
+                    cvvInput.requestFocus()
+                }
+                else -> {
+                    val brand = CardFlag.entries.find { cardNumber.matches(it.regex.toRegex()) }
+
+                    cardnoinput.text.clear()
+                    nameInput.text.clear()
+                    expInput.text.clear()
+                    cvvInput.text.clear()
+
+                    displayCardNumber(cardNumber)
+                    displayCardName(name, holderNameDisplay)
+                    displayExp(expiry, expDisplay)
+
+                    if (brand != null) {
+                        brandLogoDisplay.visibility = View.VISIBLE
+                        brandLogoDisplay.load(brand.logoRes)
+                    }
+
+                    cvvDisplay.text = "*".repeat(actualCVV.length)
+                    cvvDisplay.setOnLongClickListener {
+                        cvvDisplay.text = actualCVV
+                        Toast.makeText(applicationContext, "CVV Revealed", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+
+                    Toast.makeText(applicationContext, "Card Added", Toast.LENGTH_SHORT).show()
+
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                    imm.hideSoftInputFromWindow(addSubmit.windowToken, 0)
+                }
+            }
+        }
+
+
+        cvvDisplay.setOnLongClickListener {
+
+            cvvDisplay.text = actualCVV
+            true
+        }
+
+
+
         expInput.setOnClickListener {
             val c = Calendar.getInstance()
             val picker = android.app.DatePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog,
@@ -139,13 +218,15 @@ class MainActivity : AppCompatActivity() {
                 displayExp(s.toString(), expDisplay)
             }
         })
+
+
     }
 
     private fun displayCardNumber(cardno: String) {
         digitViews.forEachIndexed { index, tv ->
             if (index < cardno.length) {
                 tv.text = cardno[index].toString()
-                tv.setTextColor(Color.WHITE)
+                tv.setTextColor("#FFD700".toColorInt())
                 tv.alpha = 1.0f
             } else {
                 tv.text = "•"
@@ -161,12 +242,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayCVV(cvv: String, display: TextView) {
-        display.text = if (cvv.isEmpty()) "CVV" else cvv
+        display.text = cvv.ifEmpty { "CVV" }
         display.alpha = if (cvv.isEmpty()) 0.5f else 1.0f
     }
 
     private fun displayExp(expiry: String, display: TextView) {
-        display.text = if (expiry.isEmpty()) "MM/YY" else expiry
+        display.text = expiry.ifEmpty { "MM/YY" }
         display.alpha = if (expiry.isEmpty()) 0.5f else 1.0f
     }
 }
@@ -186,3 +267,11 @@ fun isValidLuhn(cardno: String): Boolean {
     }
     return sum % 10 == 0
 }
+
+
+
+
+
+
+
+

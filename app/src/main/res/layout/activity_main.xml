@@ -13,7 +13,6 @@ tools:context=".MainActivity">
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:layout_margin="24dp"
-    app:cardBackgroundColor="#1A237E"
     app:cardCornerRadius="16dp"
     app:cardElevation="20dp"
     app:layout_constraintDimensionRatio="H,1.58:1"
@@ -24,31 +23,35 @@ tools:context=".MainActivity">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0F1447"
-        android:padding="20dp">
+        android:background="#0F1447">
+
+        <ImageView
+            android:id="@+id/cardBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/credit_card_bg"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
 
         <TextView
             android:id="@+id/bankname"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
             android:layout_marginEnd="10dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="center"
+            android:maxLines="1"
             android:text="BANK NAME HERE"
-            android:textColor="#FFFFFF"
+            android:textColor="#D8F0D336"
             android:textSize="18sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <ImageView
-            android:id="@+id/cardChip"
-            android:layout_width="45dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="60dp"
-            android:alpha="0.8"
-            android:background="@drawable/chip"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.532"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,16 +59,17 @@ tools:context=".MainActivity">
             android:id="@+id/cvv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="68dp"
+            android:layout_marginEnd="44dp"
             android:text="CVV"
-            android:textColor="#FFFFFF"
+            android:textColor="#D8F0D336"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/digitContainer"
-            android:layout_width="0dp"
+            android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
@@ -93,7 +97,7 @@ tools:context=".MainActivity">
             <TextView
                 android:id="@+id/digit4"
                 style="@style/CardDigitWeight"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="9dp"
                 android:text="•" />
 
             <TextView
@@ -114,7 +118,7 @@ tools:context=".MainActivity">
             <TextView
                 android:id="@+id/digit8"
                 style="@style/CardDigitWeight"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="9dp"
                 android:text="•" />
 
             <TextView
@@ -135,7 +139,7 @@ tools:context=".MainActivity">
             <TextView
                 android:id="@+id/digit12"
                 style="@style/CardDigitWeight"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="9dp"
                 android:text="•" />
 
             <TextView
@@ -165,7 +169,7 @@ tools:context=".MainActivity">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MM/YYYY"
-            android:textColor="#FFFFFF"
+            android:textColor="#D8F0D336"
             android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="@id/holderName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -176,23 +180,27 @@ tools:context=".MainActivity">
             android:id="@+id/holderName"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="20dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="YOUR NAME HERE"
-            android:textColor="#FFFFFF"
+            android:textColor="#D8F0D336"
+            android:textStyle="bold"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/brandLogo"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:textSize="17sp"
-            android:textColor="@color/white"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="20dp"
             android:alpha="0.8"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -259,6 +267,22 @@ tools:context=".MainActivity">
         app:layout_constraintEnd_toStartOf="@id/cvventer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/namenter" />
+
+    <Button
+        android:id="@+id/addbtn"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:layout_marginBottom="170dp"
+        android:textColor="#D8F0D336"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="202dp"
+        android:backgroundTint="@color/cardview_dark_background"
+        tools:layout_editor_absoluteY="575dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cvventer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
