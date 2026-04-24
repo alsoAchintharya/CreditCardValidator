@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -14,11 +15,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.graphics.toColorInt
+import coil.load
 import java.util.Calendar
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity() {
     private lateinit var digitViews: List<TextView>
+
+    enum class CardFlag(val logoRes: Int, val color: Int, val regex: String) {
+        VISA(R.drawable.ic_visa, 0xFF191278.toInt(), "^4.*"),
+        MASTERCARD(R.drawable.ic_mastercard, 0xFF0061A8.toInt(), "^(5[1-5]|2(22[1-9]|2[3-9]|[3-6]|7[0-1]|720)).*"),
+        DISCOVER(R.drawable.ic_discover, 0xFF86B8CF.toInt(), "^6(?:011|5|4[4-9]|22).*"),
+        AMEX(R.drawable.ic_amex, 0xFF108168.toInt(), "^3[47].*")
+    }
+
+
 
     @SuppressLint("DefaultLocale")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         val holderNameDisplay = findViewById<TextView>(R.id.holderName)
         val cvvDisplay = findViewById<TextView>(R.id.cvv)
         val expDisplay = findViewById<TextView>(R.id.expiry)
+        val cardBackground = findViewById<View>(R.id.creditCardView)
+        val brandLogoDisplay = findViewById<ImageView>(R.id.brandLogo)
 
         digitViews = listOf(
             findViewById(R.id.digit1), findViewById(R.id.digit2),
@@ -54,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
         displayCardNumber("")
 
-        // --- Card Number Watcher ---
+
         cardnoinput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -62,19 +75,33 @@ class MainActivity : AppCompatActivity() {
                 val input = s.toString().replace(" ", "")
                 displayCardNumber(input)
 
-                if (input.length == 16) {
-                    if (isValidLuhn(input)) {
-                        cardnoinput.setTextColor(Color.GREEN)
-                    } else {
-                        cardnoinput.setTextColor(Color.RED)
-                        Toast.makeText(applicationContext, "Invalid card number", Toast.LENGTH_SHORT).show()
+                val brand = CardFlag.entries.find {
+                    input.isNotEmpty() && input.matches(it.regex.toRegex())
+                }
+
+                if (brand != null) {
+                    brandLogoDisplay.visibility = View.VISIBLE
+                    brandLogoDisplay.load(brand.logoRes) {
+                        crossfade(true)
+                        allowHardware(true)
                     }
+
+                    cardBackground.setBackgroundColor(brand.color)
+                } else {
+                    brandLogoDisplay.visibility = View.GONE
+                    cardBackground.setBackgroundColor(0xFF2D2D2D.toInt())
+                }
+
+
+                if (input.length == 16) {
+                    val isValid = isValidLuhn(input)
+                    cardnoinput.setTextColor(if (isValid) Color.GREEN else Color.RED)
+                    if (!isValid) Toast.makeText(applicationContext, "Invalid card number", Toast.LENGTH_SHORT).show()
                 } else {
                     cardnoinput.setTextColor(Color.BLACK)
                 }
             }
         })
-
 
         nameInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -94,6 +121,17 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+        expInput.setOnClickListener {
+            val c = Calendar.getInstance()
+            val picker = android.app.DatePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog,
+                { _, y, m, _ -> expInput.setText(String.format("%02d/%02d", m + 1, y % 100)) },
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1
+            )
+            val dayId = resources.getIdentifier("day", "id", "android")
+            if (dayId != 0) picker.datePicker.findViewById<View>(dayId)?.visibility = View.GONE
+            picker.show()
+        }
+
         expInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -101,100 +139,50 @@ class MainActivity : AppCompatActivity() {
                 displayExp(s.toString(), expDisplay)
             }
         })
-
-
-        expInput.setOnClickListener {
-            val c = Calendar.getInstance()
-            val currentYear = c.get(Calendar.YEAR)
-            val currentMonth = c.get(Calendar.MONTH)
-
-            val picker = android.app.DatePickerDialog(
-                this,
-                android.R.style.Theme_Holo_Light_Dialog,
-                { _, selectedYear, selectedMonth, _ ->
-                    val formattedDate = String.format("%02d/%02d", selectedMonth + 1, selectedYear % 100)
-                    expInput.setText(formattedDate)
-                }, currentYear, currentMonth, 1
-            )
-
-
-            val daySpinnerId = resources.getIdentifier("day", "id", "android")
-            //val daySpinnerId = resources.android.R.id.day
-            if (daySpinnerId != 0) {
-                val daySpinner = picker.datePicker.findViewById<View>(daySpinnerId)
-                daySpinner?.visibility = View.GONE
-            }
-
-
-            picker.datePicker.minDate = System.currentTimeMillis()
-            val maxCalendar = Calendar.getInstance()
-            maxCalendar.add(Calendar.YEAR, 20)
-            picker.datePicker.maxDate = maxCalendar.timeInMillis
-
-            picker.window?.setBackgroundDrawableResource(android.R.color.transparent)
-            picker.show()
-        }
     }
 
     private fun displayCardNumber(cardno: String) {
-        digitViews.forEachIndexed { index, textView ->
+        digitViews.forEachIndexed { index, tv ->
             if (index < cardno.length) {
-                textView.text = cardno[index].toString()
-                textView.setTextColor(Color.WHITE)
-                textView.alpha = 1.0f
+                tv.text = cardno[index].toString()
+                tv.setTextColor(Color.WHITE)
+                tv.alpha = 1.0f
             } else {
-                textView.text = "•"
-                textView.setTextColor("#FFD700".toColorInt())
-                textView.alpha = 0.5f
+                tv.text = "•"
+                tv.setTextColor("#FFD700".toColorInt())
+                tv.alpha = 0.5f
             }
         }
     }
 
     private fun displayCardName(name: String, display: TextView) {
-        if (name.isEmpty()) {
-            display.text = "YOUR NAME HERE"
-            display.alpha = 0.5f
-        } else {
-            display.text = name.uppercase()
-            display.alpha = 1.0f
-        }
+        display.text = if (name.isEmpty()) "YOUR NAME HERE" else name.uppercase()
+        display.alpha = if (name.isEmpty()) 0.5f else 1.0f
     }
 
     private fun displayCVV(cvv: String, display: TextView) {
-        if (cvv.isEmpty()) {
-            display.text = "CVV"
-            display.alpha = 0.5f
-        } else {
-            display.text = cvv
-            display.alpha = 1.0f
-        }
+        display.text = if (cvv.isEmpty()) "CVV" else cvv
+        display.alpha = if (cvv.isEmpty()) 0.5f else 1.0f
     }
 
     private fun displayExp(expiry: String, display: TextView) {
-        if (expiry.isEmpty()) {
-            display.text = "MM/YY"
-            display.alpha = 0.5f
-        } else {
-            display.text = expiry
-            display.alpha = 1.0f
-        }
+        display.text = if (expiry.isEmpty()) "MM/YY" else expiry
+        display.alpha = if (expiry.isEmpty()) 0.5f else 1.0f
     }
 }
 
 fun isValidLuhn(cardno: String): Boolean {
     if (cardno.length < 2) return false
     var sum = 0
-    var isalt = false
-    val digits = cardno.replace(" ", "").reversed()
-    for (char in digits) {
-        if (!char.isDigit()) continue
-        var d = char.digitToInt()
-        if (isalt) {
+    var isAlt = false
+    for (i in cardno.length - 1 downTo 0) {
+        var d = cardno[i].digitToInt()
+        if (isAlt) {
             d *= 2
             if (d > 9) d -= 9
         }
         sum += d
-        isalt = !isalt
+        isAlt = !isAlt
     }
     return sum % 10 == 0
 }
