@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/creditCardView"
+    android:layout_width="match_parent"
+    android:layout_height="230dp"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0F1447">
+
+        <ImageView
+            android:id="@+id/cardBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/credit_card_bg" />
+
+        <TextView
+            android:id="@+id/bankname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="BANK NAME HERE"
+            android:textColor="#D8F0D336"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cvv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="32dp"
+            android:text="CVV"
+            android:textColor="#D8F0D336"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/digitContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.6">
+
+            <!-- Ensure you have these IDs: digit1 through digit16 -->
+            <TextView android:id="@+id/digit1" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit2" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit3" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit4" style="@style/CardDigitWeight" android:layout_marginEnd="8dp" android:text="•" />
+            <TextView android:id="@+id/digit5" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit6" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit7" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit8" style="@style/CardDigitWeight" android:layout_marginEnd="8dp" android:text="•" />
+            <TextView android:id="@+id/digit9" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit10" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit11" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit12" style="@style/CardDigitWeight" android:layout_marginEnd="8dp" android:text="•" />
+            <TextView android:id="@+id/digit13" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit14" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit15" style="@style/CardDigitWeight" android:text="•" />
+            <TextView android:id="@+id/digit16" style="@style/CardDigitWeight" android:text="•" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/expiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MM/YY"
+            android:textColor="#D8F0D336"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/holderName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/digitContainer" />
+
+        <TextView
+            android:id="@+id/holderName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="YOUR NAME HERE"
+            android:textColor="#D8F0D336"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/brandLogo"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
