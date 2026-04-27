@@ -79,12 +79,10 @@ class MainActivity : AppCompatActivity() {
 
             val raw = previewCard.cardNumber
             val masked = raw.map { '•' }.joinToString("")
-            val formatted = masked.chunked(4).joinToString(" ")
+            val formatted = raw.chunked(4).joinToString(" ")
 
-            cardNumberView.text = if (formatted.isEmpty()) {
+            cardNumberView.text = formatted.ifEmpty {
                 "•••• •••• •••• ••••"
-            } else {
-                formatted
             }
 
             val brand = CardFlag.entries.find {
