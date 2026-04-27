@@ -18,15 +18,7 @@ class CardAdapter(
         val expiry: TextView = view.findViewById(R.id.expiry)
         val cvv: TextView = view.findViewById(R.id.cvv)
         val brandLogo: ImageView = view.findViewById(R.id.brandLogo)
-
-        val digitViews: List<TextView> = (1..16).map { i ->
-            val id = view.context.resources.getIdentifier(
-                "digit$i",
-                "id",
-                view.context.packageName
-            )
-            view.findViewById(id)
-        }
+        val cardNumber: TextView = view.findViewById(R.id.cardNumber)
     }
 
     override fun getItemCount(): Int {
@@ -69,14 +61,12 @@ class CardAdapter(
         holder.cvv.text =
             card.cvv.ifBlank { "***" }
 
-        holder.digitViews.forEachIndexed { index, tv ->
-            if (index < card.cardNumber.length) {
-                tv.text = card.cardNumber[index].toString()
-                tv.alpha = 1.0f
-            } else {
-                tv.text = "•"
-                tv.alpha = 0.5f
-            }
+        val raw = card.cardNumber
+        val masked = raw.map { '•' }.joinToString("")
+        val formatted = masked.chunked(4).joinToString(" ")
+
+        holder.cardNumber.text = formatted.ifEmpty {
+            "•••• •••• •••• ••••"
         }
 
         val brand = card.brandName?.let { name ->
