@@ -9,9 +9,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCards"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:padding="12dp"/>
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"/>
 
     <Button
         android:id="@+id/addcard"
@@ -19,8 +24,8 @@
         android:layout_height="wrap_content"
         android:text="+ Add Card"
         android:textSize="18sp"
+        android:layout_margin="16dp"
         android:backgroundTint="@color/cardview_dark_background"
-        android:textColor="#FFFFFF"
-        android:layout_margin="16dp"/>
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>
