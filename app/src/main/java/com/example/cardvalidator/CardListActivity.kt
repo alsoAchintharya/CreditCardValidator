@@ -1,6 +1,8 @@
 package com.example.cardvalidator
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +24,12 @@ class CardListActivity : AppCompatActivity() {
         adapter = CardAdapter(emptyList())
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewCards)
+
+        val addButton = findViewById<Button>(R.id.addcard)
+
+        addButton.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
