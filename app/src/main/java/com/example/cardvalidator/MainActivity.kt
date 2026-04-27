@@ -58,13 +58,7 @@ class MainActivity : AppCompatActivity() {
         val holderNameView = preview.findViewById<TextView>(R.id.holderName)
         val expiryView = preview.findViewById<TextView>(R.id.expiry)
         val cvvView = preview.findViewById<TextView>(R.id.cvv)
-
-        val digitViews = listOf(
-            R.id.digit1, R.id.digit2, R.id.digit3, R.id.digit4,
-            R.id.digit5, R.id.digit6, R.id.digit7, R.id.digit8,
-            R.id.digit9, R.id.digit10, R.id.digit11, R.id.digit12,
-            R.id.digit13, R.id.digit14, R.id.digit15, R.id.digit16
-        ).map { preview.findViewById<TextView>(it) }
+        val cardNumberView = preview.findViewById<TextView>(R.id.cardNumber)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -83,10 +77,14 @@ class MainActivity : AppCompatActivity() {
             cvvView.text =
                 previewCard.cvv.ifEmpty { "CVV" }
 
-            val digits = previewCard.cardNumber.padEnd(16, '•')
+            val raw = previewCard.cardNumber
+            val masked = raw.map { '•' }.joinToString("")
+            val formatted = masked.chunked(4).joinToString(" ")
 
-            for (i in 0 until 16) {
-                digitViews[i].text = digits[i].toString()
+            cardNumberView.text = if (formatted.isEmpty()) {
+                "•••• •••• •••• ••••"
+            } else {
+                formatted
             }
 
             val brand = CardFlag.entries.find {
@@ -120,10 +118,10 @@ class MainActivity : AppCompatActivity() {
                 input.isEmpty() -> Color.BLACK
 
                 input.length in 13..19 && isValidLuhn(input) ->
-                    "#2ECC71".toColorInt() // green (valid)
+                    "#2ECC71".toColorInt()
 
                 else ->
-                    "#E74C3C".toColorInt() // red (invalid)
+                    "#E74C3C".toColorInt()
             }
 
             cardnoinput.setTextColor(color)
