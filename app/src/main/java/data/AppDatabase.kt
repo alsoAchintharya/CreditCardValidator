@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Entity(tableName = "cards")
 data class CreditCard(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val id: Long = 0,
 
     val cardNumber: String,
     val holderName: String,
@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "wallet_db"
                 )
-                    .fallbackToDestructiveMigration(true)
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

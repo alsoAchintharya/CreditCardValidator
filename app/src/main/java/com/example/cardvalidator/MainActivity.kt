@@ -3,27 +3,31 @@ package com.example.cardvalidator
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import androidx.core.graphics.toColorInt
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var database: AppDatabase
-    private lateinit var adapter: CardAdapter
+
+    private var previewCard = CreditCard(
+        id = 0,
+        cardNumber = "",
+        holderName = "",
+        expiry = "",
+        cvv = "",
+        brandName = null
+    )
 
     enum class CardFlag(val logoRes: Int, val prefix: String) {
         VISA(R.drawable.ic_visa, "4"),
@@ -32,27 +36,13 @@ class MainActivity : AppCompatActivity() {
         AMEX(R.drawable.ic_amex, "3")
     }
 
-    private var previewCard = CreditCard(
-        cardNumber = "",
-        holderName = "",
-        expiry = "",
-        cvv = "",
-        brandName = null
-    )
-
+    @SuppressLint("DefaultLocale")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         database = AppDatabase.getDatabase(this)
-        adapter = CardAdapter(emptyList())
-
-        val recyclerView = findViewById<RecyclerView>(R.id.cardRecyclerView)
-        recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = adapter
-        PagerSnapHelper().attachToRecyclerView(recyclerView)
 
         val cardnoinput = findViewById<EditText>(R.id.cardnumber)
         val nameInput = findViewById<EditText>(R.id.namenter)
@@ -60,61 +50,93 @@ class MainActivity : AppCompatActivity() {
         val expInput = findViewById<EditText>(R.id.expenter)
         val addSubmit = findViewById<Button>(R.id.addbtn)
 
+        val preview = findViewById<androidx.cardview.widget.CardView>(R.id.creditCardView)
+
+        val bankNameView = preview.findViewById<TextView>(R.id.bankname)
+        val brandLogo = preview.findViewById<ImageView>(R.id.brandLogo)
+
+        val holderNameView = preview.findViewById<TextView>(R.id.holderName)
+        val expiryView = preview.findViewById<TextView>(R.id.expiry)
+        val cvvView = preview.findViewById<TextView>(R.id.cvv)
+
+        val digitViews = listOf(
+            R.id.digit1, R.id.digit2, R.id.digit3, R.id.digit4,
+            R.id.digit5, R.id.digit6, R.id.digit7, R.id.digit8,
+            R.id.digit9, R.id.digit10, R.id.digit11, R.id.digit12,
+            R.id.digit13, R.id.digit14, R.id.digit15, R.id.digit16
+        ).map { preview.findViewById<TextView>(it) }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        lifecycleScope.launch {
-            database.cardDao().getAllCards().collect { cards ->
-                adapter.updateCards(cards)
+        fun updatePreview() {
+
+            holderNameView.text =
+                previewCard.holderName.ifEmpty { "YOUR NAME HERE" }
+
+            expiryView.text =
+                previewCard.expiry.ifEmpty { "MM/YY" }
+
+            cvvView.text =
+                previewCard.cvv.ifEmpty { "CVV" }
+
+            val digits = previewCard.cardNumber.padEnd(16, '•')
+
+            for (i in 0 until 16) {
+                digitViews[i].text = digits[i].toString()
             }
+
+            val brand = CardFlag.entries.find {
+                previewCard.cardNumber.startsWith(it.prefix)
+            }
+
+            if (brand != null) {
+                brandLogo.setImageResource(brand.logoRes)
+            } else {
+                brandLogo.setImageDrawable(null)
+            }
+
+            bankNameView.text = brand?.name ?: "BANK NAME HERE"
         }
 
-        fun pushPreview() {
-            adapter.updateCards(listOf(previewCard))
+        cardnoinput.doAfterTextChanged {
+            val input = it.toString().replace(" ", "")
+
+            val brand = CardFlag.entries.find { flag ->
+                input.startsWith(flag.prefix)
+            }
+
+            previewCard = previewCard.copy(
+                cardNumber = input,
+                brandName = brand?.name
+            )
+
+            updatePreview()
+
+            val color = when {
+                input.isEmpty() -> Color.BLACK
+
+                input.length in 13..19 && isValidLuhn(input) ->
+                    "#2ECC71".toColorInt() // green (valid)
+
+                else ->
+                    "#E74C3C".toColorInt() // red (invalid)
+            }
+
+            cardnoinput.setTextColor(color)
         }
 
-        cardnoinput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val input = s.toString().replace(" ", "")
-
-                val brand = CardFlag.entries.find {
-                    input.startsWith(it.prefix)
-                }
-
-                previewCard = previewCard.copy(
-                    cardNumber = input,
-                    brandName = brand?.name
-                )
-
-                pushPreview()
-
-                if (input.length >= 13 && isValidLuhn(input)) {
-                    cardnoinput.setTextColor(Color.GREEN)
-                } else {
-                    cardnoinput.setTextColor(Color.BLACK)
-                }
-            }
-        })
-
-        nameInput.addTextChangedListener {
+        nameInput.doAfterTextChanged {
             previewCard = previewCard.copy(holderName = it.toString())
-            pushPreview()
+            updatePreview()
         }
 
-        cvvInput.addTextChangedListener {
+        cvvInput.doAfterTextChanged {
             previewCard = previewCard.copy(cvv = it.toString())
-            pushPreview()
-        }
-
-        expInput.addTextChangedListener {
-            previewCard = previewCard.copy(expiry = it.toString())
-            pushPreview()
+            updatePreview()
         }
 
         expInput.setOnClickListener {
@@ -123,12 +145,22 @@ class MainActivity : AppCompatActivity() {
                 this,
                 android.R.style.Theme_Holo_Light_Dialog,
                 { _, y, m, _ ->
-                    expInput.setText(String.format("%02d/%02d", m + 1, y % 100))
+                    val exp = String.format(
+                        "%02d/%02d",
+                        m + 1,
+                        y.toString().takeLast(2).toInt()
+                    )
+                    expInput.setText(exp)
                 },
                 c.get(Calendar.YEAR),
                 c.get(Calendar.MONTH),
                 1
             ).show()
+        }
+
+        expInput.doAfterTextChanged {
+            previewCard = previewCard.copy(expiry = it.toString())
+            updatePreview()
         }
 
         addSubmit.setOnClickListener {
@@ -143,17 +175,14 @@ class MainActivity : AppCompatActivity() {
                     cardnoinput.error = "Invalid Card Number"
                     return@setOnClickListener
                 }
-
                 name.isEmpty() -> {
                     nameInput.error = "Name Required"
                     return@setOnClickListener
                 }
-
                 expiry.isEmpty() -> {
                     expInput.error = "Expiry Required"
                     return@setOnClickListener
                 }
-
                 cvv.length < 3 -> {
                     cvvInput.error = "Invalid CVV"
                     return@setOnClickListener
@@ -174,9 +203,6 @@ class MainActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 database.cardDao().insert(newCard)
-
-                previewCard = CreditCard("", "", "", "", null)
-                pushPreview()
 
                 cardnoinput.text.clear()
                 nameInput.text.clear()
