@@ -16,7 +16,7 @@ import java.util.Calendar
 import androidx.core.graphics.toColorInt
 
 @SuppressLint("SetTextI18n")
-class MainActivity : AppCompatActivity() {
+class CardAddActivity : AppCompatActivity() {
 
     private lateinit var database: AppDatabase
 
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_add_card)
 
         database = AppDatabase.getDatabase(this)
 
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
                 imm.hideSoftInputFromWindow(addSubmit.windowToken, 0)
 
                 Toast.makeText(
-                    this@MainActivity,
+                    this@CardAddActivity,
                     "Card Saved to Wallet",
                     Toast.LENGTH_SHORT
                 ).show()

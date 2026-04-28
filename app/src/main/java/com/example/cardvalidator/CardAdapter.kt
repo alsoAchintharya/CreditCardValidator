@@ -70,7 +70,7 @@ class CardAdapter(
         }
 
         val brand = card.brandName?.let { name ->
-            MainActivity.CardFlag.entries.find { it.name == name }
+            CardAddActivity.CardFlag.entries.find { it.name == name }
         }
 
         if (brand != null) {

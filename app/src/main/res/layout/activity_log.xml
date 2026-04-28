@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:padding="16dp"
+    android:background="@drawable/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".logActivity">
+
+    <LinearLayout
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal"
+        tools:context=".logActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="sans-serif-black"
+            android:text="Enter username"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:id="@+id/user"
+            android:layout_width="210dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="serif-monospace"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="311dp"
+        android:layout_marginTop="110dp"
+        android:orientation="horizontal"
+        app:cardCornerRadius="24dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_gravity="center_horizontal"
+        app:cardElevation="10dp">
+
+        <ImageView
+            android:id="@+id/camcap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="#0B0F2A">
+
+        </ImageView>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <Button
+        android:id="@+id/verButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="130dp"
+        android:backgroundTint="#6B7280"
+        android:text="verify"
+        app:iconTint="#FF0000"
+        app:rippleColor="#F20101">
+    </Button>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="250dp"
+        android:backgroundTint="#6B7280"
+        android:text="Login"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="119dp"
+        tools:layout_editor_absoluteY="227dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
