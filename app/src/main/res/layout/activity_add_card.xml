@@ -24,63 +24,91 @@
 
     </FrameLayout>
 
-    <EditText
-        android:id="@+id/cardnumber"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/cardnumberLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="24dp"
-        android:background="@android:drawable/editbox_background"
-        android:hint="Enter 16 digit card number"
-        android:inputType="number"
-        android:maxLength="16"
-        android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/previewCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/namenter"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/cardnumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter 16 digit card number"
+            android:textColor="#FFC107"
+            android:inputType="number"
+            android:maxLength="19" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nameLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
-        android:background="@android:drawable/editbox_background"
-        android:hint="Enter Card holder name"
-        android:inputType="textPersonName"
-        android:maxLength="20"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/cardnumber"
+        app:layout_constraintTop_toBottomOf="@id/cardnumberLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/expenter"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/namenter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Card holder name"
+            android:textColor="#FFC107"
+            android:inputType="textPersonName"
+            android:maxLength="20" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/expLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:background="@android:drawable/editbox_background"
-        android:clickable="true"
-        android:focusable="false"
-        android:hint="Expiry"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/namenter"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/nameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cvvLayout">
 
-    <EditText
-        android:id="@+id/cvventer"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/expenter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Expiry"
+            android:focusable="false"
+            android:textColor="#FFC107"
+            android:clickable="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/cvvLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@android:drawable/editbox_background"
-        android:hint="CVV"
-        android:inputType="number"
-        android:maxLength="3"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/namenter"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/nameLayout"
+        app:layout_constraintStart_toEndOf="@id/expLayout"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/cvventer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="CVV"
+            android:textColor="#FFC107"
+            android:inputType="number"
+            android:maxLength="4" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/addbtn"
@@ -88,9 +116,10 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:textSize="20sp"
-        android:backgroundTint="#6B7280"
         android:textColor="#FFC107"
-        app:layout_constraintTop_toBottomOf="@id/cvventer"
+        android:elevation="5dp"
+        style="?attr/materialButtonOutlinedStyle"
+        app:layout_constraintTop_toBottomOf="@id/cvvLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"/>

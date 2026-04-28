@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CardValidator">
         <activity
-            android:name=".LogActivity"
+            android:name=".BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".CardListActivity"
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".CardListActivity"
+            android:exported="false" />
         <activity
             android:name=".CardAddActivity"
             android:exported="false" />
