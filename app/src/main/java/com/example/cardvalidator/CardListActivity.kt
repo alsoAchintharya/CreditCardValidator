@@ -36,12 +36,13 @@ class CardListActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
 
+        val userId = intent.getLongExtra("userId", -1L)
+
         lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                database.cardDao().getAllCards().collect { cards ->
+            database.cardDao().getCardsForUser(userId)
+                .collect { cards ->
                     adapter.updateCards(cards)
                 }
-            }
         }
     }
 }

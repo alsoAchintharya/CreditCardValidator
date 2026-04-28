@@ -64,7 +64,7 @@ class CardAdapter(
         holder.cvv.text =
             card.cvv.ifBlank { "***" }
 
-        val raw = card.cardNumber
+        val raw = card.cardNumber.ifBlank { "" }
         val masked = raw.map { '•' }.joinToString("")
         val formatted = masked.chunked(4).joinToString(" ")
 

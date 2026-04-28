@@ -1,12 +1,14 @@
 package com.example.cardvalidator
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
@@ -28,7 +30,8 @@ class CardAddActivity : AppCompatActivity() {
         holderName = "",
         expiry = "",
         cvv = "",
-        brandName = null
+        brandName = null,
+        userOwnerId = 0,
     )
 
     enum class CardFlag(val logoRes: Int, val prefix: String) {
@@ -52,7 +55,7 @@ class CardAddActivity : AppCompatActivity() {
         val expInput = findViewById<EditText>(R.id.expenter)
         val addSubmit = findViewById<Button>(R.id.addbtn)
 
-        val preview = findViewById<androidx.cardview.widget.CardView>(R.id.creditCardView)
+        val preview = findViewById<CardView>(R.id.creditCardView)
 
         val bankNameView = preview.findViewById<TextView>(R.id.bankname)
         val brandLogo = preview.findViewById<ImageView>(R.id.brandLogo)
@@ -139,7 +142,7 @@ class CardAddActivity : AppCompatActivity() {
 
         expInput.setOnClickListener {
             val c = Calendar.getInstance()
-            android.app.DatePickerDialog(
+            DatePickerDialog(
                 this,
                 android.R.style.Theme_Holo_Light_Dialog,
                 { _, y, m, _ ->
@@ -196,7 +199,8 @@ class CardAddActivity : AppCompatActivity() {
                 holderName = name,
                 expiry = expiry,
                 cvv = cvv,
-                brandName = brand?.name
+                brandName = brand?.name,
+                userOwnerId = 0
             )
 
             lifecycleScope.launch {

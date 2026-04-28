@@ -94,11 +94,16 @@ class LogActivity : AppCompatActivity() {
                             showToast("Incorrect password")
                         } else {
                             takePic()
-                        }
+
+                            val intent = Intent(this@LogActivity, CardListActivity::class.java).apply {
+                            putExtra("userId", user.userId)
+                            }
+                        startActivity(intent)
                         }
                     }
                 }
             }
+        }
 
         loginBtn.setOnClickListener {
             if (verified) {

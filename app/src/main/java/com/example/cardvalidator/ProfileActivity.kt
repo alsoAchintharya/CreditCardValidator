@@ -21,6 +21,8 @@ class ProfileActivity : BaseActivity() {
     private lateinit var db: AppDatabase
     private lateinit var userDao: UserDao
 
+    var currentUser: data.User? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,6 +51,7 @@ class ProfileActivity : BaseActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val user = userDao.getUserByUsername(loggedInUser)
+            currentUser = user
 
             withContext(Dispatchers.Main) {
                 profileDob.text = ""
@@ -66,7 +69,7 @@ class ProfileActivity : BaseActivity() {
 
         cardsButton.setOnClickListener {
             val showCardsIntent = Intent(this, CardListActivity::class.java)
-
+            showCardsIntent.putExtra("userId", currentUser?.userId ?: -1L)
             showCardsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(showCardsIntent)
         }
