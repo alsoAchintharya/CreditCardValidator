@@ -34,33 +34,29 @@ class LogActivity : AppCompatActivity() {
     private lateinit var userDao: UserDao
     private lateinit var currentUsername: String
 
-    private val imglauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            verified = true
-            verifyBtn.visibility = View.INVISIBLE
-            loginBtn.visibility = View.VISIBLE
-            camView.setImageURI(tempUri)
+    private val imglauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                verified = true
+                verifyBtn.visibility = View.INVISIBLE
+                loginBtn.visibility = View.VISIBLE
+                camView.setImageURI(tempUri)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val user = userDao.getUserByUsername(currentUsername)
-                if (user != null && user.profileImagePath == null) {
-                    photoFile?.let {
-                        userDao.updateProfileImage(currentUsername, it.absolutePath)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val user = userDao.getUserByUsername(currentUsername)
+                    if (user != null && user.profileImagePath == null) {
+                        photoFile?.let {
+                            userDao.updateProfileImage(currentUsername, it.absolutePath)
+                        }
                     }
                 }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_log)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.log)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         db = AppDatabase.getDatabase(this)
         userDao = db.userDao()
@@ -93,12 +89,17 @@ class LogActivity : AppCompatActivity() {
                         } else if (user.passwordHash != password) {
                             showToast("Incorrect password")
                         } else {
+
+                            // FIX: start camera first, DO NOT skip flow
                             takePic()
 
-                            val intent = Intent(this@LogActivity, CardListActivity::class.java).apply {
-                            putExtra("userId", user.userId)
+                            val intent = Intent(
+                                this@LogActivity,
+                                CardListActivity::class.java
+                            ).apply {
+                                putExtra("userId", user.userId)
                             }
-                        startActivity(intent)
+                            startActivity(intent)
                         }
                     }
                 }
@@ -115,12 +116,23 @@ class LogActivity : AppCompatActivity() {
         }
     }
 
+    // ✅ FIXED CAMERA FUNCTION
     private fun takePic() {
-        photoFile = File.createTempFile("tmp_img", ".png", cacheDir).apply {
-            createNewFile()
-            deleteOnExit()
-        }
-        tempUri = FileProvider.getUriForFile(this, "com.example.cardvalidator.fileprovider", photoFile!!)
+        photoFile = File.createTempFile("tmp_img_", ".jpg", cacheDir)
+
+        tempUri = FileProvider.getUriForFile(
+            this,
+            "com.example.cardvalidator.fileprovider",
+            photoFile!!
+        )
+
+        grantUriPermission(
+            "com.android.camera",
+            tempUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
+
         imglauncher.launch(tempUri!!)
     }
 
@@ -133,5 +145,6 @@ class LogActivity : AppCompatActivity() {
         }
     }
 
-    private fun showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    private fun showToast(msg: String) =
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }
