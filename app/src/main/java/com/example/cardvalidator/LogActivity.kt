@@ -116,7 +116,7 @@ class LogActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ FIXED CAMERA FUNCTION
+
     private fun takePic() {
         photoFile = File.createTempFile("tmp_img_", ".jpg", cacheDir)
 
