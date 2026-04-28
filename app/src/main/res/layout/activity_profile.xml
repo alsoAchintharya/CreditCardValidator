@@ -15,6 +15,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
@@ -29,8 +30,8 @@
                 android:id="@+id/profilePic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
                 android:contentDescription="image"
+                android:scaleType="centerCrop"
                 android:src="@drawable/profile_pic" />
 
         </androidx.cardview.widget.CardView>
@@ -56,20 +57,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
                         android:text="Name: "
                         android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:fontFamily="sans-serif-black" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/profileUser"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="serif-monospace"
                         android:text="your name"
                         android:textColor="@color/white"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:fontFamily="serif-monospace" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -79,28 +80,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="16dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/show_cards"
+                style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FFC107"
                 android:elevation="5dp"
-                style="?attr/materialButtonOutlinedStyle"
-                android:text="@string/user_card_heading" />
+                android:text="@string/user_card_heading"
+                android:textColor="#FFC107" />
 
             <Button
                 android:id="@+id/show"
+                style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:textColor="#FFC107"
                 android:elevation="5dp"
-                style="?attr/materialButtonOutlinedStyle"
-                android:text="show" />
+                android:text="show"
+                android:textColor="#FFC107" />
 
         </LinearLayout>
 

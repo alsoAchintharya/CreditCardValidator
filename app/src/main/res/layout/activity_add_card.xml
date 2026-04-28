@@ -3,16 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
     tools:context=".CardAddActivity">
 
+    <include layout="@layout/activity_base" />
+
     <FrameLayout
         android:id="@+id/previewCard"
         android:layout_width="wrap_content"
         android:layout_height="260dp"
-        android:layout_margin="16dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/bg_card_glow"
         android:elevation="12dp"
         android:translationZ="4dp"

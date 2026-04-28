@@ -27,11 +27,7 @@ class ProfileActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+
 
         db = AppDatabase.getDatabase(this)
         userDao = db.userDao()
@@ -42,15 +38,14 @@ class ProfileActivity : BaseActivity() {
         val profileImg = findViewById<ImageView>(R.id.profilePic)
         val cardsButton = findViewById<Button>(R.id.show_cards)
 
-        val loggedInUser = intent.getStringExtra("username") ?: "Guest"
-
-        profileUserName.text = loggedInUser.uppercase()
+        val userId = intent.getLongExtra("userId", -1L)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val user = userDao.getUserByUsername(loggedInUser)
+            val user = userDao.getUserById(userId)
             currentUser = user
 
             withContext(Dispatchers.Main) {
+                profileUserName.text = user?.username?.uppercase() ?: "GUEST"
 
                 user?.profileImagePath?.let { path ->
                     val file = java.io.File(path)

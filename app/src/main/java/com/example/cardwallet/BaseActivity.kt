@@ -12,6 +12,14 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    protected fun setupProfileButton() {
+        val profile_return_btn = findViewById<Button>(R.id.back_profile)
+        profile_return_btn?.setOnClickListener {
+            navToProfile()
+        }
+    }
+
+
     fun performLogout() {
         val intent = Intent(this, LogActivity::class.java)
 
@@ -19,4 +27,9 @@ open class BaseActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    fun navToProfile(){
+            startActivity(Intent(this, ProfileActivity::class.java))
+    }
+
 }

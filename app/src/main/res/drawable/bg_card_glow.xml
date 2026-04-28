@@ -10,7 +10,7 @@
                 android:centerColor="#66FFFFFF"
                 android:endColor="#00000000"
                 android:centerX="50%"
-                android:centerY="75%" />
+                android:centerY="78%" />
         </shape>
     </item>
 

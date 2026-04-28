@@ -64,16 +64,10 @@ class CardAddActivity : BaseActivity() {
         val cvvView = preview.findViewById<TextView>(R.id.cvv)
         val cardNumberView = preview.findViewById<TextView>(R.id.cardNumber)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         fun updatePreview() {
 
             holderNameView.text =
-                previewCard.holderName.ifEmpty { "YOUR NAME HERE" }
+                previewCard.holderName.uppercase().ifEmpty { "YOUR NAME HERE" }
 
             expiryView.text =
                 previewCard.expiry.ifEmpty { "MM/YY" }
@@ -130,7 +124,13 @@ class CardAddActivity : BaseActivity() {
         }
 
         nameInput.doAfterTextChanged {
-            previewCard = previewCard.copy(holderName = it.toString())
+            val upper = it.toString().uppercase()
+            if (it.toString() != upper) {
+                nameInput.setText(upper)
+                nameInput.setSelection(upper.length)
+            }
+
+            previewCard = previewCard.copy(holderName = upper)
             updatePreview()
         }
 
@@ -166,7 +166,7 @@ class CardAddActivity : BaseActivity() {
         addSubmit.setOnClickListener {
 
             val cardNumber = cardnoinput.text.toString().replace(" ", "")
-            val name = nameInput.text.toString().trim()
+            val name = nameInput.text.toString().trim().uppercase()
             val expiry = expInput.text.toString().trim()
             val cvv = cvvInput.text.toString().trim()
 

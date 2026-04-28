@@ -58,6 +58,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     suspend fun getUserByUsername(username: String): User?
 
+    @Query("SELECT * FROM users WHERE userId = :id LIMIT 1")
+    suspend fun getUserById(id: Long): User?
+
     @Query("UPDATE users SET profileImagePath = :path WHERE username = :username")
     suspend fun updateProfileImage(username: String, path: String)
 }
