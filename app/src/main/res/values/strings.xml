@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">CardValidator</string>
+    <string name="app_name">Card Wallet</string>
     <string name="user_card_heading">My Cards</string>
 </resources>

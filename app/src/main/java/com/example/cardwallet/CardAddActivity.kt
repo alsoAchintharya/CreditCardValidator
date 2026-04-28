@@ -1,4 +1,4 @@
-package com.example.cardvalidator
+package com.example.cardwallet
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -20,7 +19,7 @@ import data.AppDatabase
 import data.CreditCard
 
 @SuppressLint("SetTextI18n")
-class CardAddActivity : AppCompatActivity() {
+class CardAddActivity : BaseActivity() {
 
     private lateinit var database: AppDatabase
 

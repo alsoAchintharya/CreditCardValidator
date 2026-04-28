@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CardValidator"
+rootProject.name = "CardWallet"
 include(":app")
  

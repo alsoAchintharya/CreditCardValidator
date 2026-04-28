@@ -1,4 +1,4 @@
-package com.example.cardvalidator
+package com.example.cardwallet
 
 import android.content.Intent
 import android.net.Uri
@@ -9,8 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import data.AppDatabase
 import data.User
 import data.UserDao
@@ -33,6 +31,7 @@ class LogActivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
     private lateinit var userDao: UserDao
     private lateinit var currentUsername: String
+    private var loggedInUser: User? = null
 
     private val imglauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -89,17 +88,8 @@ class LogActivity : AppCompatActivity() {
                         } else if (user.passwordHash != password) {
                             showToast("Incorrect password")
                         } else {
-
-                            // FIX: start camera first, DO NOT skip flow
+                            loggedInUser = user
                             takePic()
-
-                            val intent = Intent(
-                                this@LogActivity,
-                                CardListActivity::class.java
-                            ).apply {
-                                putExtra("userId", user.userId)
-                            }
-                            startActivity(intent)
                         }
                     }
                 }
@@ -107,9 +97,9 @@ class LogActivity : AppCompatActivity() {
         }
 
         loginBtn.setOnClickListener {
-            if (verified) {
+            if (verified && loggedInUser != null) {
                 val intent = Intent(this, ProfileActivity::class.java).apply {
-                    putExtra("username", userField.text.toString())
+                    putExtra("userId", loggedInUser!!.userId)
                 }
                 startActivity(intent)
             }
@@ -122,7 +112,7 @@ class LogActivity : AppCompatActivity() {
 
         tempUri = FileProvider.getUriForFile(
             this,
-            "com.example.cardvalidator.fileprovider",
+            "com.example.cardwallet.fileprovider",
             photoFile!!
         )
 

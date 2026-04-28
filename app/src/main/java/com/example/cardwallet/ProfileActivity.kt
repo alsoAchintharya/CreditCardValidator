@@ -1,4 +1,4 @@
-package com.example.cardvalidator
+package com.example.cardwallet
 
 import android.content.Intent
 import android.net.Uri
@@ -39,9 +39,6 @@ class ProfileActivity : BaseActivity() {
         setupLogoutButton()
 
         val profileUserName = findViewById<TextView>(R.id.profileUser)
-        val profileDob = findViewById<TextView>(R.id.userDob)
-        val profilePhone = findViewById<TextView>(R.id.userPhone)
-        val profileAdd = findViewById<TextView>(R.id.userAdd)
         val profileImg = findViewById<ImageView>(R.id.profilePic)
         val cardsButton = findViewById<Button>(R.id.show_cards)
 
@@ -54,9 +51,6 @@ class ProfileActivity : BaseActivity() {
             currentUser = user
 
             withContext(Dispatchers.Main) {
-                profileDob.text = ""
-                profilePhone.text = ""
-                profileAdd.text = ""
 
                 user?.profileImagePath?.let { path ->
                     val file = java.io.File(path)
@@ -73,7 +67,5 @@ class ProfileActivity : BaseActivity() {
             showCardsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(showCardsIntent)
         }
-
-
     }
 }

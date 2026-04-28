@@ -1,4 +1,4 @@
-package com.example.cardvalidator
+package com.example.cardwallet
 
 import org.junit.Test
 

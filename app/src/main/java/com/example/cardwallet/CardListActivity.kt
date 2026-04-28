@@ -1,19 +1,16 @@
-package com.example.cardvalidator
+package com.example.cardwallet
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cardvalidator.adapters.CardAdapter
+import com.example.cardwallet.adapters.CardAdapter
 import data.AppDatabase
 import kotlinx.coroutines.launch
 
-class CardListActivity : AppCompatActivity() {
+class CardListActivity : BaseActivity() {
 
     private lateinit var database: AppDatabase
     private lateinit var adapter: CardAdapter

@@ -1,4 +1,4 @@
-package com.example.cardvalidator.adapters
+package com.example.cardwallet.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cardvalidator.CardAddActivity
+import com.example.cardwallet.CardAddActivity
 import data.CreditCard
-import com.example.cardvalidator.R
+import com.example.cardwallet.R
 
 class CardAdapter(
     private var cards: List<CreditCard>
