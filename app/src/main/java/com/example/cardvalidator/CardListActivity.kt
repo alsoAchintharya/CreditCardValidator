@@ -28,10 +28,16 @@ class CardListActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewCards)
 
         val addButton = findViewById<Button>(R.id.addcard)
+        val profile_return_btn = findViewById<Button>(R.id.back_profile)
 
         addButton.setOnClickListener {
             startActivity(Intent(this, CardAddActivity::class.java))
         }
+
+        profile_return_btn.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
 
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
