@@ -86,7 +86,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "wallet_db"
                 )
-                    .fallbackToDestructiveMigration(true)
+                    .fallbackToDestructiveMigration(false)
                     .build()
 
                 INSTANCE = instance

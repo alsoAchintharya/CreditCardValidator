@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -15,13 +16,16 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.core.graphics.toColorInt
+import com.example.cardwallet.databinding.ActivityAddCardBinding
 import data.AppDatabase
 import data.CreditCard
 
 @SuppressLint("SetTextI18n")
-class CardAddActivity : BaseActivity() {
+class CardAddActivity : AppCompatActivity() {
 
     private lateinit var database: AppDatabase
+
+    private lateinit var binding: ActivityAddCardBinding
 
     private var previewCard = CreditCard(
         id = 0,
@@ -44,21 +48,22 @@ class CardAddActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_card)
+
+        binding = ActivityAddCardBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         database = AppDatabase.getDatabase(this)
 
-        val cardnoinput = findViewById<EditText>(R.id.cardnumber)
-        val nameInput = findViewById<EditText>(R.id.namenter)
-        val cvvInput = findViewById<EditText>(R.id.cvventer)
-        val expInput = findViewById<EditText>(R.id.expenter)
-        val addSubmit = findViewById<Button>(R.id.addbtn)
+        val cardnoinput = binding.cardnumber
+        val nameInput = binding.namenter
+        val cvvInput = binding.cvventer
+        val expInput = binding.expenter
+        val addSubmit = binding.addbtn
 
         val preview = findViewById<CardView>(R.id.creditCardView)
-
         val bankNameView = preview.findViewById<TextView>(R.id.bankname)
         val brandLogo = preview.findViewById<ImageView>(R.id.brandLogo)
-
         val holderNameView = preview.findViewById<TextView>(R.id.holderName)
         val expiryView = preview.findViewById<TextView>(R.id.expiry)
         val cvvView = preview.findViewById<TextView>(R.id.cvv)
@@ -205,10 +210,10 @@ class CardAddActivity : BaseActivity() {
             lifecycleScope.launch {
                 database.cardDao().insert(newCard)
 
-                cardnoinput.text.clear()
-                nameInput.text.clear()
-                expInput.text.clear()
-                cvvInput.text.clear()
+                cardnoinput.text?.clear()
+                nameInput.text?.clear()
+                expInput.text?.clear()
+                cvvInput.text?.clear()
 
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(addSubmit.windowToken, 0)

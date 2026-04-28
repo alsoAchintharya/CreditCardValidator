@@ -10,7 +10,12 @@
     tools:context=".ProfileActivity">
 
 
-    <include layout="@layout/activity_base" />
+    <include
+        android:id="@+id/activityBase"
+        layout="@layout/activity_base"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
