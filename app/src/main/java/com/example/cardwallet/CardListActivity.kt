@@ -2,11 +2,11 @@ package com.example.cardwallet
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.cardwallet.adapters.CardAdapter
 import com.example.cardwallet.databinding.ActivityCardListBinding
 import data.AppDatabase
@@ -30,24 +30,30 @@ class CardListActivity : AppCompatActivity() {
 
         val recyclerView = binding.recyclerViewCards
         val addButton = binding.addcard
-
-
-        addButton.setOnClickListener {
-            startActivity(Intent(this, CardAddActivity::class.java))
-        }
-
-
-
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = adapter
-
         val userId = intent.getLongExtra("userId", -1L)
 
+        if (userId == -1L) {
+            finish()
+            return
+        }
+
+        addButton.setOnClickListener {
+            val intent = Intent(this, CardAddActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
+
+        recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.adapter = adapter
+
         lifecycleScope.launch {
-            database.cardDao().getCardsForUser(userId)
-                .collect { cards ->
-                    adapter.updateCards(cards)
-                }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                database.cardDao().getCardsForUser(userId)
+                    .collect { cards ->
+                        adapter.updateCards(cards)
+                    }
+            }
         }
     }
 }

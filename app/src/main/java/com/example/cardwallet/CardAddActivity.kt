@@ -9,8 +9,6 @@ import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -55,6 +53,14 @@ class CardAddActivity : AppCompatActivity() {
 
         database = AppDatabase.getDatabase(this)
 
+        val userId = intent.getLongExtra("userId", -1L)
+
+        if (userId == -1L) {
+            Toast.makeText(this, "Invalid user", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         val cardnoinput = binding.cardnumber
         val nameInput = binding.namenter
         val cvvInput = binding.cvventer
@@ -81,7 +87,6 @@ class CardAddActivity : AppCompatActivity() {
                 previewCard.cvv.ifEmpty { "CVV" }
 
             val raw = previewCard.cardNumber
-            val masked = raw.map { '•' }.joinToString("")
             val formatted = raw.chunked(4).joinToString(" ")
 
             cardNumberView.text = formatted.ifEmpty {
@@ -170,6 +175,7 @@ class CardAddActivity : AppCompatActivity() {
 
         addSubmit.setOnClickListener {
 
+
             val cardNumber = cardnoinput.text.toString().replace(" ", "")
             val name = nameInput.text.toString().trim().uppercase()
             val expiry = expInput.text.toString().trim()
@@ -194,6 +200,8 @@ class CardAddActivity : AppCompatActivity() {
                 }
             }
 
+            addSubmit.isEnabled = false
+
             val brand = CardFlag.entries.find {
                 cardNumber.startsWith(it.prefix)
             }
@@ -204,16 +212,11 @@ class CardAddActivity : AppCompatActivity() {
                 expiry = expiry,
                 cvv = cvv,
                 brandName = brand?.name,
-                userOwnerId = 0
+                userOwnerId = userId
             )
 
             lifecycleScope.launch {
                 database.cardDao().insert(newCard)
-
-                cardnoinput.text?.clear()
-                nameInput.text?.clear()
-                expInput.text?.clear()
-                cvvInput.text?.clear()
 
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(addSubmit.windowToken, 0)
@@ -223,6 +226,8 @@ class CardAddActivity : AppCompatActivity() {
                     "Card Saved to Wallet",
                     Toast.LENGTH_SHORT
                 ).show()
+
+                finish()
             }
         }
     }
@@ -243,3 +248,4 @@ class CardAddActivity : AppCompatActivity() {
         return sum % 10 == 0
     }
 }
+

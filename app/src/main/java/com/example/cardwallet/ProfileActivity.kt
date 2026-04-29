@@ -3,14 +3,9 @@ package com.example.cardwallet
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.cardwallet.databinding.ActivityBaseBinding
 import com.example.cardwallet.databinding.ActivityProfileBinding
 import data.AppDatabase
 import data.UserDao
@@ -33,7 +28,6 @@ class ProfileActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val baseBinding = ActivityBaseBinding.bind(binding.root)
 
 
         db = AppDatabase.getDatabase(this)
@@ -61,12 +55,15 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         }
-
         cardsButton.setOnClickListener {
-            val showCardsIntent = Intent(this, CardListActivity::class.java)
-            showCardsIntent.putExtra("userId", currentUser?.userId ?: -1L)
-            showCardsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(showCardsIntent)
+            val userId = currentUser?.userId
+            if (userId != null) {
+                val intent = Intent(this, CardListActivity::class.java)
+                intent.putExtra("userId", userId)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "User not loaded yet", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
