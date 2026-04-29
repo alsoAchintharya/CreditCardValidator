@@ -1,7 +1,7 @@
 package com.example.cardwallet
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
@@ -148,24 +148,50 @@ class CardAddActivity : AppCompatActivity() {
             previewCard = previewCard.copy(cvv = it.toString())
             updatePreview()
         }
-
         expInput.setOnClickListener {
-            val c = Calendar.getInstance()
-            DatePickerDialog(
+
+            val dialogView = layoutInflater.inflate(R.layout.dialog_expiry_picker, null)
+
+            val monthDropdown = dialogView.findViewById<AutoCompleteTextView>(R.id.monthSpinner)
+            val yearDropdown = dialogView.findViewById<AutoCompleteTextView>(R.id.yearSpinner)
+
+            monthDropdown.keyListener = null
+            yearDropdown.keyListener = null
+
+            val months = (1..12).map { String.format("%02d", it) }
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            val years = (0..15).map { (currentYear + it).toString().takeLast(2) }
+
+
+            val monthAdapter = ArrayAdapter(
                 this,
-                android.R.style.Theme_Holo_Light_Dialog,
-                { _, y, m, _ ->
-                    val exp = String.format(
-                        "%02d/%02d",
-                        m + 1,
-                        y.toString().takeLast(2).toInt()
-                    )
-                    expInput.setText(exp)
-                },
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                1
-            ).show()
+                android.R.layout.simple_dropdown_item_1line,
+                months
+            )
+
+            val yearAdapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                years
+            )
+
+            monthDropdown.setAdapter(monthAdapter)
+            yearDropdown.setAdapter(yearAdapter)
+
+            monthDropdown.setText(months[Calendar.getInstance().get(Calendar.MONTH)], false)
+            yearDropdown.setText(years[0], false)
+
+
+            AlertDialog.Builder(this)
+                .setTitle("Select Expiry Date")
+                .setView(dialogView)
+                .setPositiveButton("OK") { _, _ ->
+                    val month = monthDropdown.text.toString()
+                    val year = yearDropdown.text.toString()
+                    expInput.setText("$month/$year")
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         expInput.doAfterTextChanged {
@@ -216,18 +242,30 @@ class CardAddActivity : AppCompatActivity() {
             )
 
             lifecycleScope.launch {
-                database.cardDao().insert(newCard)
+                try {
+                    database.cardDao().insert(newCard)
 
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(addSubmit.windowToken, 0)
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                    imm?.hideSoftInputFromWindow(addSubmit.windowToken, 0)
 
-                Toast.makeText(
-                    this@CardAddActivity,
-                    "Card Saved to Wallet",
-                    Toast.LENGTH_SHORT
-                ).show()
+                    Toast.makeText(
+                        this@CardAddActivity,
+                        "Card Saved to Wallet",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                finish()
+                    finish()
+
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@CardAddActivity,
+                        "Failed to save card",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    e.printStackTrace()
+                } finally {
+                    addSubmit.isEnabled = true
+                }
             }
         }
     }

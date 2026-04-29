@@ -23,6 +23,7 @@
         android:background="@drawable/bg_card_glow"
         android:elevation="12dp"
         android:translationZ="4dp"
+        android:clipToOutline="true"
         app:layout_constraintTop_toBottomOf="@id/activityBase"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -91,7 +92,9 @@
             android:hint="Expiry"
             android:textColor="#FFC107"
             android:focusable="false"
-            android:clickable="true" />
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:longClickable="false"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,7 +120,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
