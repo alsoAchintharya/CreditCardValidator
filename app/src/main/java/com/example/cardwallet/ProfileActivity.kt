@@ -5,23 +5,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.cardwallet.databinding.ActivityProfileBinding
-import data.AppDatabase
-import data.UserDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.cardwallet.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
 
-    private lateinit var db: AppDatabase
-    private lateinit var userDao: UserDao
-
+    private val viewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
-
-    var currentUser: data.User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +25,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        db = AppDatabase.getDatabase(this)
-        userDao = db.userDao()
-
+        viewModel.init(applicationContext)
 
         val profileUserName = binding.profileUser
         val profileImg = binding.profilePic
@@ -40,26 +33,28 @@ class ProfileActivity : AppCompatActivity() {
 
         val userId = intent.getLongExtra("userId", -1L)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val user = userDao.getUserById(userId)
-            currentUser = user
+        viewModel.loadUser(userId)
 
-            withContext(Dispatchers.Main) {
-                profileUserName.text = user?.username?.uppercase() ?: "GUEST"
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect { user ->
+                    profileUserName.text = user?.username?.uppercase() ?: "GUEST"
 
-                user?.profileImagePath?.let { path ->
-                    val file = java.io.File(path)
-                    if (file.exists()) {
-                        profileImg.setImageURI(Uri.fromFile(file))
+                    user?.profileImagePath?.let { path ->
+                        val file = java.io.File(path)
+                        if (file.exists()) {
+                            profileImg.setImageURI(Uri.fromFile(file))
+                        }
                     }
                 }
             }
         }
+
         cardsButton.setOnClickListener {
-            val userId = currentUser?.userId
-            if (userId != null) {
+            val user = viewModel.user.value
+            if (user != null) {
                 val intent = Intent(this, CardListActivity::class.java)
-                intent.putExtra("userId", userId)
+                intent.putExtra("userId", user.userId)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "User not loaded yet", Toast.LENGTH_SHORT).show()

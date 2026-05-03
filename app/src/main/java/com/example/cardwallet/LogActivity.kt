@@ -1,24 +1,25 @@
 package com.example.cardwallet
 
 import android.content.Intent
-import android.content.UriPermission
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import data.AppDatabase
-import data.User
-import data.UserDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.cardwallet.viewmodel.LogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 
 class LogActivity : AppCompatActivity() {
+
+    private val viewModel: LogViewModel by viewModels()
 
     private lateinit var camView: ImageView
 
@@ -29,10 +30,7 @@ class LogActivity : AppCompatActivity() {
     private lateinit var loginBtn: Button
     private lateinit var verifyBtn: Button
 
-    private lateinit var db: AppDatabase
-    private lateinit var userDao: UserDao
     private lateinit var currentUsername: String
-    private var loggedInUser: User? = null
 
     private val imglauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -42,13 +40,8 @@ class LogActivity : AppCompatActivity() {
                 loginBtn.visibility = View.VISIBLE
                 camView.setImageURI(tempUri)
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    val user = userDao.getUserByUsername(currentUsername)
-                    if (user != null && user.profileImagePath == null) {
-                        photoFile?.let {
-                            userDao.updateProfileImage(currentUsername, it.absolutePath)
-                        }
-                    }
+                photoFile?.let { file ->
+                    viewModel.updateProfileImage(currentUsername, file.absolutePath)
                 }
             }
         }
@@ -58,10 +51,9 @@ class LogActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_log)
 
-        db = AppDatabase.getDatabase(this)
-        userDao = db.userDao()
+        viewModel.init(applicationContext)
+        viewModel.createDefaultUser()
 
-        handleDefaultUser()
         setupUI()
     }
 
@@ -73,6 +65,30 @@ class LogActivity : AppCompatActivity() {
         verifyBtn = findViewById(R.id.verButton)
         camView = findViewById(R.id.camcap)
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginResult.collect { result ->
+                    when (result) {
+                        is LogViewModel.LoginResult.Success -> {
+                            takePic()
+                            viewModel.resetLoginResult()
+                        }
+                        is LogViewModel.LoginResult.UserNotFound -> {
+                            showToast("User not found")
+                            viewModel.resetLoginResult()
+                        }
+                        is LogViewModel.LoginResult.IncorrectPassword -> {
+                            showToast("Incorrect password")
+                            viewModel.resetLoginResult()
+                        }
+                        null -> {
+                            // Do nothing
+                        }
+                    }
+                }
+            }
+        }
+
         verifyBtn.setOnClickListener {
             val name = userField.text.toString().trim()
             val password = passwordField.text.toString().trim()
@@ -81,26 +97,15 @@ class LogActivity : AppCompatActivity() {
                 showToast("Field is required")
             } else {
                 currentUsername = name
-                CoroutineScope(Dispatchers.IO).launch {
-                    val user = userDao.getUserByUsername(name)
-                    runOnUiThread {
-                        if (user == null) {
-                            showToast("User not found")
-                        } else if (user.passwordHash != password) {
-                            showToast("Incorrect password")
-                        } else {
-                            loggedInUser = user
-                            takePic()
-                        }
-                    }
-                }
+                viewModel.verifyUser(name, password)
             }
         }
 
         loginBtn.setOnClickListener {
-            if (verified && loggedInUser != null) {
+            val user = viewModel.loggedInUser.value
+            if (verified && user != null) {
                 val intent = Intent(this, ProfileActivity::class.java).apply {
-                    putExtra("userId", loggedInUser!!.userId)
+                    putExtra("userId", user.userId)
                 }
                 startActivity(intent)
             }
@@ -125,15 +130,6 @@ class LogActivity : AppCompatActivity() {
         )
 
         imglauncher.launch(tempUri!!)
-    }
-
-    private fun handleDefaultUser() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val existing = userDao.getUserByUsername("achintharya")
-            if (existing == null) {
-                userDao.insert(User(username = "achintharya", passwordHash = "default"))
-            }
-        }
     }
 
     private fun showToast(msg: String) =

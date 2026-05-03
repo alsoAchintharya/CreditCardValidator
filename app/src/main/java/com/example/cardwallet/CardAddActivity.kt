@@ -7,22 +7,20 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.core.graphics.toColorInt
 import com.example.cardwallet.databinding.ActivityAddCardBinding
-import data.AppDatabase
+import com.example.cardwallet.viewmodel.CardAddViewModel
 import data.CreditCard
 
 @SuppressLint("SetTextI18n")
 class CardAddActivity : AppCompatActivity() {
 
-    private lateinit var database: AppDatabase
-
+    private val viewModel: CardAddViewModel by viewModels()
     private lateinit var binding: ActivityAddCardBinding
 
     private var previewCard = CreditCard(
@@ -50,8 +48,7 @@ class CardAddActivity : AppCompatActivity() {
         binding = ActivityAddCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        database = AppDatabase.getDatabase(this)
+        viewModel.init(applicationContext)
 
         val userId = intent.getLongExtra("userId", -1L)
 
@@ -241,10 +238,9 @@ class CardAddActivity : AppCompatActivity() {
                 userOwnerId = userId
             )
 
-            lifecycleScope.launch {
-                try {
-                    database.cardDao().insert(newCard)
-
+            viewModel.insertCard(
+                card = newCard,
+                onSuccess = {
                     val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                     imm?.hideSoftInputFromWindow(addSubmit.windowToken, 0)
 
@@ -255,18 +251,17 @@ class CardAddActivity : AppCompatActivity() {
                     ).show()
 
                     finish()
-
-                } catch (e: Exception) {
+                },
+                onError = { e ->
                     Toast.makeText(
                         this@CardAddActivity,
                         "Failed to save card",
                         Toast.LENGTH_SHORT
                     ).show()
                     e.printStackTrace()
-                } finally {
                     addSubmit.isEnabled = true
                 }
-            }
+            )
         }
     }
 
