@@ -11,7 +11,8 @@ import data.CreditCard
 import com.example.cardwallet.R
 
 class CardAdapter(
-    private var cards: List<CreditCard>
+    private var cards: List<CreditCard>,
+    private val onDeleteClick: (CreditCard) -> Unit
 ) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
     var previewCard: CreditCard? = null
@@ -22,6 +23,8 @@ class CardAdapter(
         val cvv: TextView = view.findViewById(R.id.cvv)
         val brandLogo: ImageView = view.findViewById(R.id.brandLogo)
         val cardNumber: TextView = view.findViewById(R.id.cardNumber)
+
+        val deleteBtn: ImageView = view.findViewById(R.id.btnDelete)
     }
 
     override fun getItemCount(): Int {
@@ -80,7 +83,13 @@ class CardAdapter(
         } else {
             holder.brandLogo.visibility = View.INVISIBLE
         }
+
+        holder.deleteBtn.setOnClickListener {
+            onDeleteClick(card)
+        }
+
     }
+
 
     fun updateCards(newCards: List<CreditCard>) {
         this.cards = newCards

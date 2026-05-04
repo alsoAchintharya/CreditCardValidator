@@ -36,8 +36,18 @@ class CardListActivity : AppCompatActivity() {
         }
 
         viewModel.init(applicationContext)
-        adapter = CardAdapter(emptyList())
 
+        adapter = CardAdapter(emptyList()) { card ->
+
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Card")
+                .setMessage("Are you sure you want to delete this card? This action cannot be undone.")
+                .setPositiveButton("Delete") { _, _ ->
+                    viewModel.deleteCard(card)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
         val recyclerView = binding.recyclerViewCards
         val addButton = binding.addcard
         val userId = intent.getLongExtra("userId", -1L)

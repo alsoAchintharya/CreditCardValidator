@@ -113,5 +113,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="Delete Card"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="26dpdp"
+            android:layout_marginEnd="28dp"
+            app:tint="@color/gold" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

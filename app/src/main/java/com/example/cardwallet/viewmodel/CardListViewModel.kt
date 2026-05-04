@@ -27,4 +27,10 @@ class CardListViewModel : ViewModel() {
             }
         }
     }
+
+    fun deleteCard(card: CreditCard) {
+        viewModelScope.launch {
+            database.cardDao().delete(card)
+        }
+    }
 }
