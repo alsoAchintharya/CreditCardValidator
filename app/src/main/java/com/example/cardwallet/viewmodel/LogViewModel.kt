@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.AppDatabase
 import data.User
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class LogViewModel : ViewModel() {
@@ -19,6 +21,12 @@ class LogViewModel : ViewModel() {
     private val _loginResult = MutableStateFlow<LoginResult?>(null)
     val loginResult: StateFlow<LoginResult?> = _loginResult
 
+    private val _currentUsername = MutableStateFlow<String?>(null)
+    val currentUsername: StateFlow<String?> = _currentUsername
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+
     fun init(context: Context) {
         database = AppDatabase.getDatabase(context)
     }
@@ -27,7 +35,9 @@ class LogViewModel : ViewModel() {
         viewModelScope.launch {
             val existing = database.userDao().getUserByUsername("achintharya")
             if (existing == null) {
-                database.userDao().insert(User(username = "achintharya", passwordHash = "default"))
+                database.userDao().insert(
+                    User(username = "achintharya", passwordHash = "default")
+                )
             }
         }
     }
@@ -35,22 +45,31 @@ class LogViewModel : ViewModel() {
     fun verifyUser(username: String, password: String) {
         viewModelScope.launch {
             val user = database.userDao().getUserByUsername(username)
+
             when {
                 user == null -> {
                     _loginResult.value = LoginResult.UserNotFound
                 }
+
                 user.passwordHash != password -> {
                     _loginResult.value = LoginResult.IncorrectPassword
                 }
+
                 else -> {
                     _loggedInUser.value = user
                     _loginResult.value = LoginResult.Success
+                    _currentUsername.value = username
+
+                    // ✅ fire one-time event
+                    _uiEvent.emit(UiEvent.TakePicture)
                 }
             }
         }
     }
 
-    fun updateProfileImage(username: String, path: String) {
+    fun saveProfileImage(path: String) {
+        val username = _currentUsername.value ?: return
+
         viewModelScope.launch {
             database.userDao().updateProfileImage(username, path)
         }
@@ -64,5 +83,9 @@ class LogViewModel : ViewModel() {
         object Success : LoginResult()
         object UserNotFound : LoginResult()
         object IncorrectPassword : LoginResult()
+    }
+
+    sealed class UiEvent {
+        object TakePicture : UiEvent()
     }
 }
