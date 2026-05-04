@@ -39,6 +39,8 @@ data class CreditCard(
 @Dao
 interface CardDao {
 
+    @Query("SELECT COUNT(*) FROM cards WHERE userOwnerId = :userId")
+    fun getCardCountForUser(userId: Long): Flow<Int>
     @Query("SELECT * FROM cards WHERE userOwnerId = :userId ORDER BY id DESC")
     fun getCardsForUser(userId: Long): Flow<List<CreditCard>>
 

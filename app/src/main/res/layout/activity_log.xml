@@ -25,7 +25,7 @@
             android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFC107"
+            android:textColor="@color/gold"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,7 +45,7 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFC107"
+            android:textColor="@color/gold"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:background="#0B0F2A" />
+            android:background="@drawable/background" />
     </androidx.cardview.widget.CardView>
 
     <Button

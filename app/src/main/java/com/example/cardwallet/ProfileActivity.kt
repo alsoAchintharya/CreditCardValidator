@@ -1,5 +1,6 @@
 package com.example.cardwallet
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +20,7 @@ class ProfileActivity : AppCompatActivity() {
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,12 +36,21 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.init(applicationContext)
 
         val profileUserName = binding.profileUser
+        val userCardCount = binding.userCards
         val profileImg = binding.profilePic
         val cardsButton = binding.showCards
 
         val userId = intent.getLongExtra("userId", -1L)
 
         viewModel.loadUser(userId)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.cardCount.collect { count ->
+                    userCardCount.text = "$count"
+                }
+            }
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

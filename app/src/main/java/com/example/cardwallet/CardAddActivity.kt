@@ -173,13 +173,13 @@ class CardAddActivity : AppCompatActivity() {
 
             val monthAdapter = ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.dropdown_item,
                 months
             )
 
             val yearAdapter = ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.dropdown_item,
                 years
             )
 
@@ -190,7 +190,7 @@ class CardAddActivity : AppCompatActivity() {
             yearDropdown.setText(years[0], false)
 
 
-            AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this)
                 .setTitle("Select Expiry Date")
                 .setView(dialogView)
                 .setPositiveButton("OK") { _, _ ->
@@ -200,6 +200,7 @@ class CardAddActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         }
 
         expInput.doAfterTextChanged {
