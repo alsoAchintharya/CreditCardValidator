@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class ProfileViewModel : ViewModel() {
 
     private lateinit var database: AppDatabase
-    private val cardDao by lazy { database.cardDao() }
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
@@ -20,25 +19,30 @@ class ProfileViewModel : ViewModel() {
     private val _cardCount = MutableStateFlow(0)
     val cardCount: StateFlow<Int> = _cardCount
 
+    private var currentUserId: Long = -1
+
     fun init(context: Context) {
         database = AppDatabase.getDatabase(context)
     }
+
     fun loadUser(userId: Long) {
+        currentUserId = userId
+
         viewModelScope.launch {
             val userData = database.userDao().getUserById(userId)
             _user.value = userData
-
-            if (userData != null) {
-                observeCardCount(userData.userId)
-            }
         }
+
+        observeCardCount(userId)
     }
 
-    fun observeCardCount(userId: Long) {
+    private fun observeCardCount(userId: Long) {
         viewModelScope.launch {
-            cardDao.getCardCountForUser(userId).collect { count ->
-                _cardCount.value = count
-            }
+            database.cardDao()
+                .getCardCountForUser(userId)
+                .collect { count ->
+                    _cardCount.value = count
+                }
         }
     }
 }
