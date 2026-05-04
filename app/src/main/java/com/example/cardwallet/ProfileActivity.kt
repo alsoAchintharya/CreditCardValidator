@@ -27,9 +27,7 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.activityBase.logoutBtn.setOnClickListener {
             val intent = Intent(this, LogActivity::class.java)
-            //viewModel.clearUser()
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
             startActivity(intent)
         }
 
