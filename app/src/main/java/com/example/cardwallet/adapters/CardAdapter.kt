@@ -61,16 +61,14 @@ class CardAdapter(
         holder.expiry.text =
             card.expiry.ifBlank { "MM/YY" }
 
-        holder.cvv.text =
-            card.cvv.ifBlank { "***" }
+        holder.cvv.text = "***"
+//            card.cvv.ifBlank { "***" }
 
         val raw = card.cardNumber.ifBlank { "" }
-        val masked = raw.map { '•' }.joinToString("")
-        val formatted = masked.chunked(4).joinToString(" ")
-
-        holder.cardNumber.text = formatted.ifEmpty {
-            "•••• •••• •••• ••••"
-        }
+        val last4 = raw.takeLast(4)
+        holder.cardNumber.text =
+            if (raw.isNotEmpty()) "•••• •••• •••• $last4"
+            else "•••• •••• •••• ••••"
 
         val brand = card.brandName?.let { name ->
             CardAddActivity.CardFlag.entries.find { it.name == name }
