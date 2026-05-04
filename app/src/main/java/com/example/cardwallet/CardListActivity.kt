@@ -24,12 +24,27 @@ class CardListActivity : AppCompatActivity() {
         binding = ActivityCardListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.activityBase.logoutBtn.setOnClickListener {
+            val intent = Intent(this, LogActivity::class.java)
+            //viewModel.clearUser()
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+        }
+
+        binding.activityBase.backProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
         viewModel.init(applicationContext)
         adapter = CardAdapter(emptyList())
 
         val recyclerView = binding.recyclerViewCards
         val addButton = binding.addcard
         val userId = intent.getLongExtra("userId", -1L)
+
+        val snapHelper = androidx.recyclerview.widget.LinearSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerView)
 
         if (userId == -1L) {
             finish()

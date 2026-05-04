@@ -2,6 +2,7 @@ package com.example.cardwallet
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
@@ -47,6 +48,18 @@ class CardAddActivity : AppCompatActivity() {
 
         binding = ActivityAddCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.activityBase.logoutBtn.setOnClickListener {
+            val intent = Intent(this, LogActivity::class.java)
+            //viewModel.clearUser()
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+        }
+
+        binding.activityBase.backProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
 
         viewModel.init(applicationContext)
 

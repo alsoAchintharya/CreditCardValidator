@@ -25,6 +25,14 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.activityBase.logoutBtn.setOnClickListener {
+            val intent = Intent(this, LogActivity::class.java)
+            //viewModel.clearUser()
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+        }
+
         viewModel.init(applicationContext)
 
         val profileUserName = binding.profileUser
