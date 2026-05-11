@@ -94,6 +94,7 @@ Login → Profile → Card List → Add Card → Card Details Actions
   </tr>
   <tr>
     <td align="center" style="padding: 20px; width: 300px;">
+      <br/>
       <img src="https://github.com/user-attachments/assets/48d37e1f-98c3-423e-aa19-b3ffd75106aa" width="220"/><br/><br/>
       <b>Card Management Module</b><br/>
       <sub><i>Manage saved cards with smooth scrolling and deletion support.</i></sub><br/><br/>
@@ -110,9 +111,11 @@ Login → Profile → Card List → Add Card → Card Details Actions
 </sub><br/><br/>
 <b>Technologies</b><br/>
 <sub>Kotlin • RecyclerView • ViewModel • Coroutines • AlertDialog</sub>
+        <br/>
       </div>
     </td>
     <td align="center" style="padding: 20px; width: 300px;">
+      <br/>
       <img src="https://github.com/user-attachments/assets/89ab34bc-5665-4760-a8a7-e96d49c5a9ca" width="220"/><br/><br/>
       <b>Card Creation Module</b><br/>
       <sub><i>Interactive card creation with validation and live preview.</i></sub><br/><br/>
@@ -129,6 +132,7 @@ Login → Profile → Card List → Add Card → Card Details Actions
 </sub><br/><br/>
 <b>Technologies</b><br/>
 <sub>Kotlin • MVVM • StateFlow • Coroutines • Luhn Algorithm</sub>
+        <br/>
       </div>
     </td>
   </tr>
