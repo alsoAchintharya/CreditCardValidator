@@ -51,6 +51,7 @@ Login → Profile → Card List → Add Card → Card Details Actions
 <table align="center">
   <tr>
     <td align="center" style="padding: 20px; width: 300px;">
+      <br>
       <img src="https://github.com/user-attachments/assets/8b7410a6-b944-42bf-a43d-5805c5c354a0" width="220"/><br/><br/>
       <b>Login Module</b><br/>
       <sub><i>Secure authentication and identity verification system.</i></sub><br/><br/>
