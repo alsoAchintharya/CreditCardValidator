@@ -14,8 +14,8 @@
 
 ##  UI/UX Features
 
--  Offline-first data storage
--  Secure login & authentication
+-  Offline-first data storage with Room Database
+-  Basic authentication flow with secure local handling
 -  User profile management
 -  Add, view, and manage cards
 -  Clean and modern UI
@@ -133,3 +133,145 @@ Login → Profile → Card List → Add Card → Card Details Actions
   </tr>
 </table>
 
+# Core Implementation Highlights
+
+This section highlights the core engineering logic behind the **Card Wallet App**, focusing on validation, reactive architecture, lifecycle safety, and secure Android practices.
+
+---
+
+## Card Validation (Luhn Algorithm)
+
+Used in `CardAddActivity` to validate credit/debit card numbers before storage.
+
+```kotlin
+private fun isValidLuhn(cardno: String): Boolean {
+    var sum = 0
+    var isAlt = false
+
+    for (i in cardno.length - 1 downTo 0) {
+        var digit = cardno[i].digitToInt()
+
+        if (isAlt) {
+            digit *= 2
+            if (digit > 9) digit -= 9
+        }
+
+        sum += digit
+        isAlt = !isAlt
+    }
+
+    return sum % 10 == 0
+}
+```
+
+### Purpose
+*   Prevents invalid card entry.
+*   Ensures structural integrity before storage.
+*   Implements industry-standard credit card validation algorithm.
+
+---
+
+## Reactive Form State Management (MVVM + StateFlow)
+
+Used in `CardAddActivity` for real-time UI updates via ViewModel.
+
+```kotlin
+viewModel.formState.collect { state ->
+    holderNameView.text =
+        state.holderName.uppercase().ifEmpty { "YOUR NAME HERE" }
+
+    expiryView.text =
+        state.expiry.ifEmpty { "MM/YY" }
+
+    cvvView.text =
+        state.cvv.ifEmpty { "CVV" }
+
+    cardNumberView.text =
+        state.cardNumber.chunked(4).joinToString(" ")
+            .ifEmpty { "•••• •••• •••• ••••" }
+}
+```
+
+### Purpose
+*   Enables reactive UI updates.
+*   Maintains single source of truth via ViewModel.
+
+---
+
+## Secure Image Capture Flow (FileProvider)
+
+Used in `LogActivity` for identity verification.
+
+```kotlin
+private fun takePic() {
+    photoFile = File.createTempFile("tmp_img_", ".jpg", cacheDir)
+
+    tempUri = FileProvider.getUriForFile(
+        this,
+        "com.example.cardwallet.fileprovider",
+        photoFile!!
+    )
+
+    grantUriPermission(
+        "com.android.camera",
+        tempUri,
+        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+    )
+
+    imglauncher.launch(tempUri!!)
+}
+```
+
+### Purpose
+*   Secure temporary image handling.
+*   Prevents direct file exposure.
+*   Uses Android FileProvider best practices.
+
+---
+
+## Lifecycle-aware Reactive Collection
+
+Used in `ProfileActivity` and `CardListActivity`.
+
+```kotlin
+lifecycleScope.launch {
+    repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.cards.collect { cards ->
+            adapter.updateCards(cards)
+        }
+
+        viewModel.user.collect { user ->
+            profileUserName.text =
+                user?.username?.uppercase() ?: "GUEST"
+        }
+    }
+}
+```
+
+### Purpose
+*   Prevents memory leaks.
+*   Ensures lifecycle-safe UI updates.
+*   Efficient Flow collection pattern.
+
+---
+
+## Card Brand Detection
+
+Used in `CardAddActivity` for automatic card type recognition.
+
+```kotlin
+val brand = CardFlag.entries.find {
+    state.cardNumber.startsWith(it.prefix)
+}
+
+if (brand != null) {
+    brandLogo.setImageResource(brand.logoRes)
+} else {
+    brandLogo.setImageDrawable(null)
+}
+```
+
+### Purpose
+*   Detects card type (Visa, MasterCard, etc.).
+*   Improves UX with visual feedback.
